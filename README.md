@@ -12,6 +12,26 @@ Backend:
 
 Use WebRTC, RTP, or some other streaming paradigm for client/server sockets
 
+```
+
+                                            +----------+
+                                          +>| jbclient |  
+                                         /  +----------+
+              Host server               / 
+    +-----------------------------+    /
+    |   +---------------------+   |   /     +----------+
+    |   |       jbserver      |<-----+----->| jbclient |
+    |   +---------------------+   |   \     +----------+
+    |     | | |         A A A     |    \
+    |     | | |         | | |     |     \ 
+    |     V V V         | | |     |      \  +----------+
+    |   +---------------------+   |       +>| jbclient |
+    |   |  postgres music db  |   |         +----------+
+    |   +---------------------+   |
+    +-----------------------------+
+
+```
+
 ## Roadmap
 1. **Basic terminal client/server in Go**
     - Send HTTP packets back and forth
