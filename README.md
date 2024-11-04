@@ -14,25 +14,25 @@ Use WebRTC, RTP, or some other streaming paradigm for client/server sockets
 
 ```
 
-                                            +----------+
-                                          +>| jbclient |  
-                                         /  +----------+
-              Host server               / 
-    +-----------------------------+    /
-    |   +---------------------+   |   /     +----------+
-    |   |       jbserver      |<-----+----->| jbclient |
-    |   +---------------------+   |   \     +----------+
-    |     | | |         A A A     |    \
-    |     | | |         | | |     |     \ 
-    |     V V V         | | |     |      \  +----------+
-    |   +---------------------+   |       +>| jbclient |
-    |   |  postgres music db  |   |         +----------+
-    |   +---------------------+   |
+              Host server          
     +-----------------------------+
-
+    |   +---------------------+   |
+    |   |  postgres music db  |   |           +----------+
+    |   +---------------------+   |       +-->| jbclient |
+    |     | | |         A A A     |      /    +----------+
+    |     | | |         | | |     |     / 
+    |     V V V         | | |     |    /
+    |   +---------------------+   |   /       +----------+
+    |   |       jbserver      |<-----+------->| jbclient |
+    |   +---------------------+   |   \       +----------+
+    +-----------------------------+    \
+                                        \ 
+                                         \    +----------+
+                                          +-->| jbclient |
+                                              +----------+
 ```
 
-## Roadmap
+## Roadmap                                    
 1. **Basic terminal client/server in Go**
     - Send HTTP packets back and forth
     - How to use Go? WTF is Go? 
