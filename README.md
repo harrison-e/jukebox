@@ -2,16 +2,20 @@
 Jukebox is an open-source, self-hosted music streaming server model.
 
 ## Proposed tech stack
-Two clients:
+Frontend:
 1. Webapp client in frontend JavaScript/HTML/CSS
-2. TUI client in whatever lang (Go or Rust)
+2. TUI client in Go 
 
 Backend:
-- Go backend server logic
+- Go for server logic
 - Relational database for storage/querying (MySQL? PostgreSQL?)
+- Use Docker to containerize?
 
-Use WebRTC, RTP, or some other streaming paradigm for client/server sockets
+Communication:
+- Use WebRTC, RTP, or some other streaming paradigm for client/server sockets
 
+
+## Flow diagram
 ```
 
               Host server                   Connected clients
