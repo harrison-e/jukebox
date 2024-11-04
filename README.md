@@ -1,3 +1,4 @@
+```
 ░░░░░░░░░░░░░░  
 ░░░░▄▄▄▄▄▄░░░░  
 ░░▄▀░░░░░░▀▄░░  
@@ -6,6 +7,7 @@
 ░░░░░█░█▄▄▀░░░  
 ░░▀▄▄▀░▄▄▄▄▄░░  
 ░░░░░░░░░░░░░░  
+```
 
 # Jukebox
 Jukebox is an open-source, self-hosted music streaming server model.
