@@ -46,4 +46,4 @@ Use WebRTC, RTP, or some other streaming paradigm for client/server sockets
 ## Inspiration
 - [Jukebox.today (unmaintained peaked-in-high-school-ass version of this project)](http://jukebox.today)
 - [Groove Basin (old version of what we want to do)](https://github.com/andrewrk/groovebasin)
-- [Nate's Zoom project](./proj3_report.pdf)
+- [Nate's Zoom project](./res/proj3_report.pdf)
