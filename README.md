@@ -14,7 +14,7 @@ Use WebRTC, RTP, or some other streaming paradigm for client/server sockets
 
 ```
 
-              Host server          
+              Host server                   Connected clients
     +-----------------------------+
     |   +---------------------+   |
     |   |  postgres music db  |   |           +----------+
