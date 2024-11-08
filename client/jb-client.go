@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-    resp, err := http.Get("http://localhost:8080/stream") // Connect to the server stream
+    resp, err := http.Get("http://localhost:8080/Go") // Connect to the server stream
     if err != nil {
         fmt.Println("Error connecting to server:", err)
         return
@@ -40,7 +40,7 @@ func main() {
     if runtime.GOOS == "darwin" {
         cmd = exec.Command("afplay", tempFile.Name())
     } else if runtime.GOOS == "linux" {
-        cmd = exec.Command("mpg123", tempFile.Name())
+        cmd = exec.Command("cvlc", tempFile.Name())
     } else {
         fmt.Println("Unsupported OS")
         return
