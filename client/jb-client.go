@@ -1,24 +1,54 @@
-package main 
+package main
 
 import (
-  "fmt"
-  "io/ioutil"
-  "net/http"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "os/exec"
+    "runtime"
 )
 
 func main() {
-  resp, err := http.Get("http://localhost:8080/Go")
-  if err != nil {
-    fmt.Println("HTTP Get Error:", err)
-    return
-  }
-  defer resp.Body.Close()
+    resp, err := http.Get("http://localhost:8080/stream") // Connect to the server stream
+    if err != nil {
+        fmt.Println("Error connecting to server:", err)
+        return
+    }
+    defer resp.Body.Close()
 
-  body, err := ioutil.ReadAll(resp.Body)
-  if err != nil {
-    fmt.Println("Error reading body:", err)
-    return
-  }
+    tempFile, err := os.CreateTemp("", "streamed_audio_*.mp3")
+    if err != nil {
+        fmt.Println("Error creating temp file:", err)
+        return
+    }
+    defer os.Remove(tempFile.Name()) // Clean up temp file
+    defer tempFile.Close()
 
-  fmt.Println("Server says:", string(body))
+    // Write the full stream to the temp file
+    _, err = io.Copy(tempFile, resp.Body)
+    if err != nil {
+        fmt.Println("Error streaming audio:", err)
+        return
+    }
+
+    // Ensure the temp file is fully written before playing
+    tempFile.Close()
+
+    // Play the audio file based on OS
+    var cmd *exec.Cmd
+    if runtime.GOOS == "darwin" {
+        cmd = exec.Command("afplay", tempFile.Name())
+    } else if runtime.GOOS == "linux" {
+        cmd = exec.Command("mpg123", tempFile.Name())
+    } else {
+        fmt.Println("Unsupported OS")
+        return
+    }
+
+    // Run the playback command
+    err = cmd.Run()
+    if err != nil {
+        fmt.Println("Failed to play audio:", err)
+    }
 }
