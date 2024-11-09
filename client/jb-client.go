@@ -3,15 +3,46 @@ package main
 import (
   "fmt"
   "io"
-  "net/http"
   "os"
   "time"
+  "net/http"
+
   "github.com/gopxl/beep"
   "github.com/gopxl/beep/mp3"
   "github.com/gopxl/beep/speaker"
+
+  "github.com/gorilla/websocket"
 )
 
-func main() {
+func playMp3File(f *os.File) {
+  // Move file cursor back to start 
+  f.Seek(0, io.SeekStart)
+
+  // Decode mp3 into streamer with beep/mp3
+  streamer, format, err := mp3.Decode(f)
+  if err != nil {
+    fmt.Println("Error decoding mp3:", err)
+    return
+  }
+  defer streamer.Close()
+
+  // Initialize beep/speaker
+  // First arg is sample rate, second is buffer size
+  speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+
+  // Make a channel to be notified when Seq is over 
+  // - beep.Seq takes a sequence of streamers and plays them in order 
+  // - beep.Callback creates a "streamer" that is really a callback fn
+  //   ^ this might be super useful for client/server stuff
+  done := make(chan bool)
+  speaker.Play(beep.Seq(streamer, beep.Callback(func() {
+    done <- true
+  })))
+
+  <-done
+}
+
+func retrieveAudioRawHttp() {
   resp, err := http.Get("http://localhost:8080/") // Connect to the server stream
   if err != nil {
     fmt.Println("Error connecting to server:", err)
@@ -34,29 +65,42 @@ func main() {
     return
   }
 
-  // Move file cursor back to start 
-  tempFile.Seek(0, io.SeekStart)
+  // Play temp file 
+  playMp3File(tempFile)
+}
 
-  // Decode mp3 into streamer with beep/mp3
-  streamer, format, err := mp3.Decode(tempFile)
+func connectEchoWebSocket() {
+  // Connect to WS server
+  conn, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws", nil)
   if err != nil {
-    fmt.Println("Error decoding mp3:", err)
+    fmt.Println("WS dial failed:", err)
     return
   }
-  defer streamer.Close()
+  defer conn.Close()
 
-  // Initialize beep/speaker
-  // First arg is sample rate, second is buffer size
-  speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+  // Send message to server
+  err = conn.WriteMessage(websocket.TextMessage, []byte("Hello, WS!"))
+  if err != nil {
+    fmt.Println("Failed to write to WS:", err)
+    return
+  }
+  fmt.Println("Sent message to server")
 
-  // Make a channel to be notified when Seq is over 
-  // - beep.Seq takes a sequence of streamers and plays them in order 
-  // - beep.Callback creates a "streamer" that is really a callback fn
-  //   ^ this might be super useful for client/server stuff
-  done := make(chan bool)
-  speaker.Play(beep.Seq(streamer, beep.Callback(func() {
-    done <- true
-  })))
+  // Set read timeout
+  conn.SetReadDeadline(time.Now().Add(15 * time.Second))
 
-  <-done
+  // Read echo from server
+  _, msg, err := conn.ReadMessage()
+  if err != nil {
+    fmt.Println("Failed to read from WS:", err)
+    return
+  }
+  fmt.Printf("Received message from server: \"%s\"\n", msg)
+
+  // Keep connection open
+  for {}
+}
+
+func main() {
+  connectEchoWebSocket()
 }
