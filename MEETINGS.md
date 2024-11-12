@@ -20,6 +20,7 @@
 - Serve mp3 over WebSocket
 - Server-side timestamp and queue
 - Pause/play
+- Research Postgres, song metadata, etc.
 
 
 ## 3 November 2024
